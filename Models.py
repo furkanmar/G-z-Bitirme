@@ -31,12 +31,14 @@ corr_matrix = df.corr()
 plt.figure(figsize=(20, 15))
 sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap="coolwarm", cbar=True)
 plt.title("Korelasyon Matrisi")
+plt.savefig("correlation_matrix.png")
 plt.show()
 
 
 # Histograms
 df.hist(figsize=(15, 10), bins=30)
 plt.tight_layout()
+plt.savefig("histograms.png")
 plt.show()
 
 
@@ -133,16 +135,14 @@ print(f"Explained Variance: {svr_ev:.4f}")
 
 param_dist = {
     'feature_selection__k': [5, 10, 'all'],  
-    'elastic__alpha': np.logspace(-2, 1, 10),  
-    'elastic__l1_ratio': np.linspace(0.1, 0.9, 9),
-
+    'elastic__alpha': np.logspace(-3, 1, 10),  
+    'elastic__l1_ratio': np.linspace(0, 1, 11),
 }
 
 pipeline = Pipeline([
     ('scaler', StandardScaler()),
     ('feature_selection', SelectKBest(score_func=f_regression, k='all')),
-    ('elastic', ElasticNet(random_state=42, max_iter=10000))
-
+    ('elastic', ElasticNet(random_state=42))
 ])
 
 # Hiperparameter optimization for Elastic Net
@@ -153,8 +153,7 @@ random_search = RandomizedSearchCV(
     cv=10, 
     scoring='r2', 
     random_state=42, 
-    n_jobs=-1,ww
-    verbose=2
+    n_jobs=-1
 )
 
 random_search.fit(X_train, y_train)
@@ -184,7 +183,7 @@ data = {
 
 
 df = pd.DataFrame(data)
-df.to_csv("model_scores_v1.csv", index=False)
+df.to_csv("model_scores.csv", index=False)
 
 
 plt.figure(figsize=(10, 6))
@@ -194,10 +193,10 @@ plt.bar(df["Model"], df["R2 Score"], alpha=0.7, label=("R2 Score"), color='blue'
 plt.title("Model Evaluation R2_Score")
 plt.xlabel("Models")
 plt.ylabel("R2 Score")
-plt.ylim(0.9,1)
+plt.ylim(0.95,1)
 plt.xticks(rotation=45)
 plt.legend()
 
 
-plt.savefig("model_scores_plot_v1.png")
+plt.savefig("model_scores_plot.png")
 plt.show()
